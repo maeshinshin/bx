@@ -1,0 +1,22 @@
+version: "2"
+linters:
+  default: standard
+  exclusions:
+    rules:
+      # Allow the test files to use os.Exit-style patterns and other test-only patterns
+      - path: _test\.go$
+        linters:
+          - errcheck
+          - gocritic
+      # Allow unused-parameter in test code
+      - path: _test\.go$
+        linters:
+          - revive
+        text: "unused-parameter"
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    paths:
+      - ".*_test\\.go$"
