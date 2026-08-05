@@ -66,13 +66,13 @@ jobs:
           CGO_ENABLED: "0"
         run: |
           mkdir -p dist
-          go build -trimpath -ldflags "-s -w" -o "dist/bx${{ matrix.ext }}" .
+          go build -trimpath -ldflags "-s -w" -o "dist/bx-${{ matrix.target }}${{ matrix.ext }}" .
 
       - name: archive
         uses: actions/upload-artifact@v4
         with:
           name: bx-${{ matrix.target }}
-          path: dist/bx${{ matrix.ext }}
+          path: dist/bx-${{ matrix.target }}${{ matrix.ext }}
           if-no-files-found: error
 
   publish:
@@ -106,10 +106,10 @@ jobs:
         with:
           generate_release_notes: true
           files: |
-            artifacts/bx-linux-amd64/bx
-            artifacts/bx-linux-arm64/bx
-            artifacts/bx-darwin-amd64/bx
-            artifacts/bx-darwin-arm64/bx
-            artifacts/bx-windows-amd64/bx.exe
-            artifacts/bx-windows-arm64/bx.exe
+            artifacts/bx-linux-amd64/bx-linux-amd64
+            artifacts/bx-linux-arm64/bx-linux-arm64
+            artifacts/bx-darwin-amd64/bx-darwin-amd64
+            artifacts/bx-darwin-arm64/bx-darwin-arm64
+            artifacts/bx-windows-amd64/bx-windows-amd64.exe
+            artifacts/bx-windows-arm64/bx-windows-arm64.exe
             artifacts/checksums.txt
