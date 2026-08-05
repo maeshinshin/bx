@@ -28,9 +28,14 @@ func TestDecodeCmd(t *testing.T) {
 		args         []string
 		stdin        string
 		fileContent  string
+		filePath     string
 		useDirFile   bool
 		useNullStdin bool
 		useDirStdin  bool
+		useK8sFlag   bool
+		k8sFromFile  string
+		k8sFromArg   string
+		k8sFromStdin string
 		expectedOut  string
 		expectedErr  bool
 	}{
@@ -80,16 +85,53 @@ func TestDecodeCmd(t *testing.T) {
 			expectedErr: true,
 		},
 		{
-			name:        "9. [Color Check] Intentionally failing test",
-			args:        []string{"decode", "aG9nZQ=="},
-			expectedOut: "hoge\n",
+			name:        "9. Successful k8s secret decode from argument",
+			args:        []string{"decode", "-k", "data:\n  username: YWRtaW4=\n"},
+			useK8sFlag:  true,
+			expectedOut: "username: admin\n",
+		},
+		{
+			name:        "10. Successful k8s secret decode from file",
+			args:        []string{"decode", "-k"},
+			useK8sFlag:  true,
+			k8sFromFile: "data:\n  username: YWRtaW4=\n",
+			expectedOut: "username: admin\n",
+		},
+		{
+			name:         "11. Successful k8s secret decode from stdin",
+			args:         []string{"decode", "-k"},
+			useK8sFlag:   true,
+			k8sFromStdin: "data:\n  username: YWRtaW4=\n",
+			expectedOut:  "username: admin\n",
+		},
+		{
+			name:        "12. k8s decode returns error when YAML is invalid",
+			args:        []string{"decode", "-k", "data: : :\n  bad: : :\n"},
+			useK8sFlag:  true,
+			expectedErr: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fileFlag = ""
+			k8sFlag = false
 			testArgs := tt.args
+
+			// Prepare a file path arg for k8sFromFile scenarios.
+			if tt.useK8sFlag && tt.k8sFromFile != "" {
+				tmpfile, err := os.CreateTemp("", "bx-k8s-*")
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer os.Remove(tmpfile.Name())
+				if _, err := tmpfile.WriteString(tt.k8sFromFile); err != nil {
+					t.Fatal(err)
+				}
+				tmpfile.Close()
+				testArgs = []string{"decode", "-k", "-f", tmpfile.Name()}
+				tt.filePath = tmpfile.Name()
+			}
 
 			if tt.fileContent != "" {
 				tmpfile, err := os.CreateTemp("", "bx-test-*")
@@ -139,6 +181,8 @@ func TestDecodeCmd(t *testing.T) {
 				os.Stdin = rIn
 				if tt.stdin != "" {
 					wIn.WriteString(tt.stdin)
+				} else if tt.k8sFromStdin != "" {
+					wIn.WriteString(tt.k8sFromStdin)
 				}
 				wIn.Close()
 			}
@@ -162,23 +206,11 @@ func TestDecodeCmd(t *testing.T) {
 				if err != nil {
 					t.Errorf("Unexpected error occurred: %v", err)
 				}
-				assertColorDiff(t, tt.expectedOut, actualOut)
+				if tt.expectedOut != actualOut {
+					t.Errorf("Output mismatch:\nExpected:\n%q\nActual:\n%q", tt.expectedOut, actualOut)
+				}
 			}
 		})
 	}
 }
 
-func assertColorDiff(t *testing.T, expected, actual string) {
-	t.Helper()
-
-	if expected != actual {
-		green := "\x1b[32m"
-		red := "\x1b[31m"
-		reset := "\x1b[0m"
-
-		t.Errorf("Output mismatch:\n%s[Expected]%s\n%q\n%s[Actual]%s\n%q\n",
-			green, reset, expected,
-			red, reset, actual,
-		)
-	}
-}
