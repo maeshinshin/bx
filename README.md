@@ -45,7 +45,7 @@ sudo install bx /usr/local/bin/
 
 ### go install
 
-Requires Go 1.21 or later.
+Requires Go 1.23 or later.
 
 ```sh
 go install github.com/maeshinshin/bx@latest
