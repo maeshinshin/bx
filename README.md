@@ -22,13 +22,20 @@
 
 ## Why bx?
 
-The standard `base64` utility on most Unix systems only handles plain Base64 strings. When you work with Kubernetes Secrets, the Base64 values live inside YAML and need to be extracted before they can be decoded. `bx` combines both steps so you can run:
+Without `bx`, inspecting a Kubernetes Secret looks like this:
 
 ```sh
-kubectl get secret my-secret -o yaml | bx decode -k
+$ kubectl get secret my-secret -o yaml \
+    | yq '.data | to_entries | .[] | "\(.key): \(.value | @base64d)"'
 ```
 
-instead of piping through `yq`, `jq`, and `base64` separately. It also reads from arguments, files, or stdin, which makes it usable in scripts and one-liners.
+With `bx` it is the same one-liner as plain Base64 decoding:
+
+```sh
+$ kubectl get secret my-secret -o yaml | bx d -k
+```
+
+`bx` reads from arguments, files, or stdin, and turns the slow dance between `yq`, `jq`, and `base64 -d` into a single command. Use `bx e` / `bx d` as shortcuts for `bx encode` / `bx decode`.
 
 ## Installation
 
