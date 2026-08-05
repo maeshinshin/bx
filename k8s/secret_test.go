@@ -183,4 +183,3 @@ func TestDecodeSecretYAML_OutputIncludesTrailingNewline(t *testing.T) {
 		t.Errorf("expected trailing newline, got %q", string(got))
 	}
 }
-

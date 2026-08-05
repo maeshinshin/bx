@@ -213,4 +213,3 @@ func TestDecodeCmd(t *testing.T) {
 		})
 	}
 }
-
