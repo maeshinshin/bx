@@ -22,14 +22,21 @@
 
 ## Why bx?
 
-Without `bx`, inspecting a Kubernetes Secret looks like this:
+`bx d` replaces `base64 -d` for quick decoding:
+
+```sh
+$ echo "aGVsbG8=" | bx d
+hello
+```
+
+For Kubernetes Secrets, the alternative is a long `yq` query:
 
 ```sh
 $ kubectl get secret my-secret -o yaml \
     | yq '.data | to_entries | .[] | "\(.key): \(.value | @base64d)"'
 ```
 
-With `bx` it is the same one-liner as plain Base64 decoding:
+With `bx` it becomes the same one-liner as plain Base64 decoding:
 
 ```sh
 $ kubectl get secret my-secret -o yaml | bx d -k
