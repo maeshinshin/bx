@@ -12,7 +12,19 @@ import (
 var encodeCmd = &cobra.Command{
 	Use:     "encode [string]",
 	Aliases: []string{"e"},
-	Short:   "Encodes a string to Base64",
+	Short:   "Encode a string to Base64",
+	Long: `Encode reads a string and prints its Base64 encoding to stdout.
+
+Input is taken from the first argument, from a file passed with -f/--file,
+or from stdin when no argument or file is given.`,
+	Example: `  # Encode a string
+  bx encode "hello"
+
+  # Encode the contents of a file
+  bx encode -f input.txt
+
+  # Encode data piped from another command
+  echo "hello" | bx encode`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var inputBytes []byte
 		var err error

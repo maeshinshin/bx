@@ -18,7 +18,27 @@ var k8sFlag bool
 var decodeCmd = &cobra.Command{
 	Use:     "decode [base64_string]",
 	Aliases: []string{"d"},
-	Short:   "Decodes a Base64 encoded string or Kubernetes Secret YAML",
+	Short:   "Decode a Base64 string or Kubernetes Secret YAML",
+	Long: `Decode reads a Base64 encoded string and prints the decoded value to
+stdout. With -k/--k8s, it instead reads a Kubernetes Secret YAML manifest and
+prints every value under the "data" key as Base64-decoded "key: value" pairs.
+
+Input is taken from the first argument, from a file passed with -f/--file,
+or from stdin when no argument or file is given.`,
+	Example: `  # Decode a Base64 string
+  bx decode "aG9nZQ=="
+
+  # Decode the contents of a file
+  bx decode -f encoded.txt
+
+  # Decode data piped from another command
+  echo "aG9nZQ==" | bx decode
+
+  # Decode every value in the data field of a Secret YAML
+  bx decode -k -f secret.yaml
+
+  # Pipe directly from kubectl
+  kubectl get secret my-secret -o yaml | bx decode -k`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var inputBytes []byte
 		var err error
