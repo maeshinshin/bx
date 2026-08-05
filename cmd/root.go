@@ -24,16 +24,19 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "bx",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "A Base64 encoder/decoder for strings and Kubernetes Secret YAML",
+	Long: `bx encodes and decodes Base64 strings, and decodes the data field of
+Kubernetes Secret YAML manifests without requiring kubectl.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+Examples:
+  # Encode a string
+  bx encode "hoge"
+
+  # Decode a Base64 string
+  bx decode "aG9nZQ=="
+
+  # Decode every value in the data field of a Secret YAML
+  bx decode -k -f secret.yaml`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -43,16 +46,4 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
-}
-
-func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bx.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
