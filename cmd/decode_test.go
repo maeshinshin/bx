@@ -110,12 +110,23 @@ func TestDecodeCmd(t *testing.T) {
 			useK8sFlag:  true,
 			expectedErr: true,
 		},
+		{
+			name:        "13. Successful URL-safe decode round trip (Pj4_ -> >>?)",
+			args:        []string{"decode", "-u", "Pj4_"},
+			expectedOut: ">>?\n",
+		},
+		{
+			name:        "14. Successful URL-safe decode of URL alphabet (a-b_ accepted)",
+			args:        []string{"decode", "-u", "a-b_"},
+			expectedOut: "k\xE6\xFF\n",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fileFlag = ""
 			k8sFlag = false
+			urlFlag = false
 			testArgs := tt.args
 
 			// Prepare a file path arg for k8sFromFile scenarios.

@@ -85,11 +85,22 @@ func TestEncodeCmd(t *testing.T) {
 			useDirStdin: true,
 			expectedErr: true,
 		},
+		{
+			name:        "10. Successful URL-safe encode from argument (>>? -> Pj4_)",
+			args:        []string{"encode", "-u", ">>?"},
+			expectedOut: "Pj4_\n",
+		},
+		{
+			name:        "11. Successful URL-safe encode of input without special chars (hoge)",
+			args:        []string{"encode", "-u", "hoge"},
+			expectedOut: "aG9nZQ==\n",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fileFlag = ""
+			urlFlag = false
 			testArgs := tt.args
 
 			if tt.fileContent != "" {
