@@ -208,7 +208,7 @@ bx completion powershell > bx.ps1
 ## Limitations
 
 - Only the standard Base64 alphabet (`+/`) is supported. URL-safe Base64 (`-_`) is not yet recognized.
-- Only the top-level `data` key is decoded. Nested mappings, lists, and the `stringData` field are not yet supported.
+- Only the top-level `data` and `stringData` keys are decoded. Nested mappings and lists inside those keys are skipped.
 - The output format for `decode -k` is a simple `key: value` text and is not a structured format such as JSON or YAML.
 
 ## License
