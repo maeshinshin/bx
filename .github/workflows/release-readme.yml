@@ -1,8 +1,9 @@
 name: release-readme
 
 on:
-  release:
-    types: [published]
+  create:
+    tags:
+      - v*
 
 permissions:
   contents: write
