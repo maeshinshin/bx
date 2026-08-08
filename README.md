@@ -57,11 +57,20 @@ brew install maeshinshin/tap/bx
 Download the archive for your platform from the [Releases](https://github.com/maeshinshin/bx/releases) page, extract it, and place `bx` in a directory on your `PATH`.
 
 ```sh
-# Example: Linux amd64
-curl -L -o bx.tar.gz https://github.com/maeshinshin/bx/releases/latest/download/bx-linux-amd64.tar.gz
+# Linux amd64
+curl -L -o bx.tar.gz https://github.com/maeshinshin/bx/releases/latest/download/bx_1.0.0_linux_amd64.tar.gz
+tar -xzf bx.tar.gz
+sudo install bx /usr/local/bin/
+
+# macOS (Apple Silicon)
+curl -L -o bx.tar.gz https://github.com/maeshinshin/bx/releases/latest/download/bx_1.0.0_darwin_arm64.tar.gz
 tar -xzf bx.tar.gz
 sudo install bx /usr/local/bin/
 ```
+
+Replace `1.0.0` with the version you want, or browse the [Releases](https://github.com/maeshinshin/bx/releases) page to copy the exact archive name. Available targets are `linux_amd64`, `linux_arm64`, `darwin_amd64`, `darwin_arm64`, `windows_amd64`, and `windows_arm64` (the Windows archives are `.zip`).
+
+On Windows, download `bx_<version>_windows_amd64.zip` (or `windows_arm64.zip`) and extract `bx.exe`.
 
 ### go install
 
@@ -193,6 +202,7 @@ $ kubectl get secret my-secret -o yaml | bx decode -k
 | -------------- | ------------------ | ---------------------------------------------------------------------------------- |
 | `-f`, `--file` | `encode`, `decode` | Read input from a file instead of an argument or stdin                             |
 | `-k`, `--k8s`  | `decode`           | Treat input as a Kubernetes Secret YAML and decode every value in the `data` field |
+| `-u`, `--url`  | `encode`, `decode` | Use the URL-safe Base64 alphabet (`-_`) instead of the standard alphabet (`+/`)    |
 | `-h`, `--help` | all                | Show help for a command                                                            |
 
 Exit codes:
