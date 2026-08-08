@@ -40,6 +40,41 @@ data:
 			expected: "username: admin\npassword: p@ssword\n",
 		},
 		{
+			name: "stringData values are emitted verbatim",
+			input: `apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+stringData:
+  username: admin
+  password: p@ssword
+`,
+			expected: "username: admin\npassword: p@ssword\n",
+		},
+		{
+			name: "data and stringData are both emitted",
+			input: `apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+data:
+  username: YWRtaW4=
+stringData:
+  password: p@ssword
+`,
+			expected: "username: admin\npassword: p@ssword\n",
+		},
+		{
+			name: "non-mapping stringData values are skipped",
+			input: `stringData:
+  username: admin
+  list:
+    - foo
+    - bar
+`,
+			expected: "username: admin\n",
+		},
+		{
 			name: "data field with invalid base64 keeps the raw value",
 			input: `data:
   key: not_valid_base64!!!
@@ -144,8 +179,8 @@ func TestDecodeSecretYAML_TopLevelNonMappingWithDataInside(t *testing.T) {
 }
 
 func TestDecodeSecretYAML_KeyNotDataIsIgnored(t *testing.T) {
-	input := `stringData:
-  username: YWRtaW4=
+	input := `metadata:
+  name: my-secret
 `
 	got, err := DecodeSecretYAML([]byte(input))
 	if err != nil {

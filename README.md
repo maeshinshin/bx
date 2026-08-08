@@ -46,6 +46,12 @@ $ kubectl get secret my-secret -o yaml | bx d -k
 
 ## Installation
 
+### Homebrew
+
+```sh
+brew install maeshinshin/tap/bx
+```
+
 ### Download binary
 
 Download the archive for your platform from the [Releases](https://github.com/maeshinshin/bx/releases) page, extract it, and place `bx` in a directory on your `PATH`.
@@ -217,7 +223,8 @@ bx completion powershell > bx.ps1
 
 ## Limitations
 
-- Only the top-level `data` key is decoded. Nested mappings, lists, and the `stringData` field are not yet supported.
+- Only the standard Base64 alphabet (`+/`) is supported. URL-safe Base64 (`-_`) is not yet recognized.
+- Only the top-level `data` and `stringData` keys are decoded. Nested mappings and lists inside those keys are skipped.
 - The output format for `decode -k` is a simple `key: value` text and is not a structured format such as JSON or YAML.
 
 ## License

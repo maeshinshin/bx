@@ -16,7 +16,10 @@ var encodeCmd = &cobra.Command{
 	Long: `Encode reads a string and prints its Base64 encoding to stdout.
 
 Input is taken from the first argument, from a file passed with -f/--file,
-or from stdin when no argument or file is given.`,
+or from stdin when no argument or file is given.
+
+Pass -u/--url to use the URL-safe Base64 alphabet (outputs '-' and '_'
+instead of '+' and '/').`,
 	Example: `  # Encode a string
   bx encode "hello"
 
@@ -24,7 +27,10 @@ or from stdin when no argument or file is given.`,
   bx encode -f input.txt
 
   # Encode data piped from another command
-  echo "hello" | bx encode`,
+  echo "hello" | bx encode
+
+  # Encode using the URL-safe Base64 alphabet
+  bx encode -u ">>?"`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var inputBytes []byte
 		var err error
@@ -54,7 +60,11 @@ or from stdin when no argument or file is given.`,
 			}
 		}
 
-		encoded := base64.StdEncoding.EncodeToString(inputBytes)
+		enc := base64.StdEncoding
+		if urlFlag {
+			enc = base64.URLEncoding
+		}
+		encoded := enc.EncodeToString(inputBytes)
 		fmt.Println(encoded)
 		return nil
 	},
@@ -63,4 +73,5 @@ or from stdin when no argument or file is given.`,
 func init() {
 	rootCmd.AddCommand(encodeCmd)
 	encodeCmd.Flags().StringVarP(&fileFlag, "file", "f", "", "specify the file to read from")
+	encodeCmd.Flags().BoolVarP(&urlFlag, "url", "u", false, "use URL-safe Base64 alphabet")
 }
