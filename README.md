@@ -46,6 +46,12 @@ $ kubectl get secret my-secret -o yaml | bx d -k
 
 ## Installation
 
+### Homebrew
+
+```sh
+brew install maeshinshin/tap/bx
+```
+
 ### Download binary
 
 Download the archive for your platform from the [Releases](https://github.com/maeshinshin/bx/releases) page, extract it, and place `bx` in a directory on your `PATH`.
