@@ -1,5 +1,6 @@
 # bx
 
+[![Latest Release](https://img.shields.io/github/v/release/maeshinshin/bx)](https://github.com/maeshinshin/bx/releases/latest)
 [![codecov](https://codecov.io/gh/maeshinshin/bx/graph/badge.svg)](https://app.codecov.io/gh/maeshinshin/bx)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
