@@ -14,6 +14,7 @@ import (
 
 var fileFlag string
 var k8sFlag bool
+var urlFlag bool
 
 var decodeCmd = &cobra.Command{
 	Use:     "decode [base64_string]",
@@ -24,7 +25,10 @@ stdout. With -k/--k8s, it instead reads a Kubernetes Secret YAML manifest and
 prints every value under the "data" key as Base64-decoded "key: value" pairs.
 
 Input is taken from the first argument, from a file passed with -f/--file,
-or from stdin when no argument or file is given.`,
+or from stdin when no argument or file is given.
+
+Pass -u/--url to accept the URL-safe Base64 alphabet (uses '-' and '_'
+instead of '+' and '/').`,
 	Example: `  # Decode a Base64 string
   bx decode "aG9nZQ=="
 
@@ -33,6 +37,9 @@ or from stdin when no argument or file is given.`,
 
   # Decode data piped from another command
   echo "aG9nZQ==" | bx decode
+
+  # Decode a URL-safe Base64 string
+  bx decode -u "a-b_"
 
   # Decode every value in the data field of a Secret YAML
   bx decode -k -f secret.yaml
@@ -78,7 +85,11 @@ or from stdin when no argument or file is given.`,
 		}
 
 		inputStr := strings.TrimSpace(string(inputBytes))
-		decoded, err := base64.StdEncoding.DecodeString(inputStr)
+		enc := base64.StdEncoding
+		if urlFlag {
+			enc = base64.URLEncoding
+		}
+		decoded, err := enc.DecodeString(inputStr)
 		if err != nil {
 			return fmt.Errorf("failed to decode base64 string: %w", err)
 		}
@@ -92,4 +103,5 @@ func init() {
 	rootCmd.AddCommand(decodeCmd)
 	decodeCmd.Flags().StringVarP(&fileFlag, "file", "f", "", "specify the file to read from")
 	decodeCmd.Flags().BoolVarP(&k8sFlag, "k8s", "k", false, "extract and decode data fields from Kubernetes Secret YAML")
+	decodeCmd.Flags().BoolVarP(&urlFlag, "url", "u", false, "use URL-safe Base64 alphabet")
 }
