@@ -1,0 +1,45 @@
+name: release-readme
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    name: bump README version
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: read version from tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: update README example
+        run: |
+          sed -i -E "s/^VERSION=[0-9]+\.[0-9]+\.[0-9]+/VERSION=${VERSION}/" README.md
+
+      - name: show diff
+        run: |
+          git diff --stat README.md
+          git diff README.md
+
+      - name: commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet README.md; then
+            echo "README.md already at version ${VERSION}; nothing to commit"
+            exit 0
+          fi
+          git add README.md
+          git commit -m "docs: bump README install example to ${VERSION} [skip ci]"
+          git push
