@@ -1,5 +1,6 @@
 # bx
 
+[![CI](https://github.com/maeshinshin/bx/actions/workflows/test.yml/badge.svg)](https://github.com/maeshinshin/bx/actions/workflows/test.yml)
 [![Latest Release](https://img.shields.io/github/v/release/maeshinshin/bx)](https://github.com/maeshinshin/bx/releases/latest)
 [![codecov](https://codecov.io/gh/maeshinshin/bx/graph/badge.svg)](https://app.codecov.io/gh/maeshinshin/bx)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -74,7 +75,7 @@ sudo install bx /usr/local/bin/
 To pin a specific version, replace `latest` with the version tag (without the leading `v`):
 
 ```sh
-VERSION=1.0.0
+VERSION=1.1.0
 curl -L -o bx.tar.gz "https://github.com/maeshinshin/bx/releases/download/v${VERSION}/bx_${VERSION}_linux_amd64.tar.gz"
 tar -xzf bx.tar.gz
 sudo install bx /usr/local/bin/
@@ -84,9 +85,18 @@ Available targets are `linux_amd64`, `linux_arm64`, `darwin_amd64`, `darwin_arm6
 
 On Windows, download `bx_<version>_windows_amd64.zip` (or `windows_arm64.zip`) and extract `bx.exe`.
 
-### go install
+### Build from source
 
 Requires Go 1.23 or later.
+
+```sh
+git clone https://github.com/maeshinshin/bx.git
+cd bx
+go build -trimpath -ldflags "-s -w" -o bx .
+mv bx /usr/local/bin/   # or any directory on your PATH
+```
+
+Or, if you only need the binary in your Go cache and have `$GOPATH/bin` on your PATH:
 
 ```sh
 go install github.com/maeshinshin/bx@latest
@@ -236,14 +246,33 @@ Exit codes:
 
 ## Shell completion
 
-`bx` ships with cobra's built-in completion command. Generate a script for your shell with:
+`bx` ships with cobra's built-in completion command. Load it from your shell startup file so completions work only for your user (no `sudo` required).
+
+For **bash**, add this to `~/.bashrc`:
 
 ```sh
-bx completion bash > /etc/bash_completion.d/bx
-bx completion zsh > "${fpath[1]}/_bx"
-bx completion fish > ~/.config/fish/completions/bx.fish
-bx completion powershell > bx.ps1
+source <(bx completion bash)
 ```
+
+For **zsh**, add this to `~/.zshrc`:
+
+```sh
+source <(bx completion zsh)
+```
+
+For **fish**, add this to `~/.config/fish/config.fish`:
+
+```sh
+bx completion fish | source
+```
+
+For **PowerShell**, add this to your profile (`$PROFILE`):
+
+```powershell
+bx completion powershell | Out-String | Invoke-Expression
+```
+
+Reload the shell (or `source ~/.bashrc`) to activate completions.
 
 ## Limitations
 
